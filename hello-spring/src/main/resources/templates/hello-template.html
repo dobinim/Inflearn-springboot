@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- thymeleaf 템플릿을 사용해 html 구현 -->
+<head>
+    <meta charset="UTF-8">
+    <title>Hello-template</title>
+</head>
+<body>
+<p th:text="'hello ' + ${name}">Hello! empty</p>
+<!-- 화면 동작 시 <p> 태그 안의 내용이 th:text로 설정한 내용으로 전환된다.
+    thymeleaf는 인터넷 접속 없이도 해당 파일의 경로를 주소창에 입력하면 볼 수 있다. -->
+</body>
+</html>
+
