@@ -2,15 +2,23 @@ package hello.hellospring.service;
 
 import hello.hellospring.domain.Member;
 import hello.hellospring.repository.MemberRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+
+
+@Service // Service 어노테이션 : 스프링 실행 시 해당 어노테이션이 붙은 아이를 스프링 빈에 등록해줌
 public class MemberService {
                 // test 수행 시 따로 만들지 않고 클래스에 대고 ctrl + shift + t 누르면 됨.
     private final MemberRepository memberRepository;
         // private final MemberRepository memberRepository = new MemoryMemberRepository();
         // -> 2. 선언만 하고 외부에서 이용 가능하도록 아래와 같이 생성자를 만들어준다.
+    @Autowired
+    /* 스프링 빈에 등록된 객체를 사용할 때마다 autowired 써서 연결
+    -> MemberRepository를 구현한 MemoryMemberRepository의 객체가 자동적으로 주입됨 */
     public MemberService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }

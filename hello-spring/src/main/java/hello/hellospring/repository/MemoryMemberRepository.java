@@ -1,9 +1,11 @@
 package hello.hellospring.repository;
 
 import hello.hellospring.domain.Member;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
+@Repository // Repository 어노테이션 : 스프링 실행 시 해당 Repository를 인식, 등록
 public class MemoryMemberRepository implements MemberRepository {
     // Override 한꺼번에 하려면 alt + Enter 누르면 됨
 
