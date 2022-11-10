@@ -24,7 +24,7 @@ public class MemberController {
 
 
     // 생성자 만들기 -> alt + insert
-    @Autowired
+    // @Autowired
     /* Autowired 어노테이션 :
      - 스프링 실행 시 스프링 컨테이너에 등록된 해당 컨테이너가 실행되면서 그 안의 생성자로 인해
      자동적으로 해당 클래스 객체가 생성됨. */
@@ -47,11 +47,30 @@ public class MemberController {
        -> 정답은 NO. WHY?
        - 스프링은 실행되는 해당 패키지와 그 하위 패키지 내에서만 컴포넌트 스캔을 실행한다!
        - 즉, 우리의 경우 hello.hellospring 패키지 내에서만 작동하는 것!
-    2. 자바 코드로 직접 스프링 빈 등록 */
+    2. 자바 코드로 직접 스프링 빈 등록
+    - 직접 스프링에 빈을 등록 --> SpringConfig 클래스 생성
+    - SpringConfig에 각각 @Bean 어노테이션을 이용해 bean을 등록해준다
+    - Controller는 어쩔 수 없이 그냥 @Controller 어노테이션 써줘야 함
+    3. xml에 직접 빈 등록 -------> 거의 사용하지 X
+     */
 
     /* 스프링에서 스프링 빈 등록 시 유의 사항
     - 스프링 컨테이너에 스프링 빈 등록 시, 기본적으로 "싱글톤" 으로 등록한다 -> 유일하게 1개만 등록한다는 소리! (2개 이상 X)
         - 해당되는 것들 모두 1개씩만 등록되기 때문에 사용할 때 모두 같은 인스턴스를 사용함.
         - 설정으로 싱글톤이 아니게 쓸 수 있지만, 특수한 케이스 제외하면 대부분 싱글톤!
+    */
+
+    /* 의존성 주입(Dependency Injection)
+    - 필드 주입, setter 주입, 생성자 주입의 3 가지 방법이 있음
+    - 우리가 배운 건 생성자 주입
+    - 필드 주입은 권장되지 않음
+        필드 주입 : @Autowired를 private final MemberRepository memberRepository; 에 붙여 바로 주입하는 것
+    - setter 주입을 하면 public으로 해놔야되기 때문에 누군가의 접근이 용이함 --> 보안성 Low
+        private MemberRepository memberRepository;
+        @Autowired
+        public void setMemberRepository(MemberRepository memberRepository) {
+            this.memberRepository = memberRepository;
+        }
+
     */
 }
