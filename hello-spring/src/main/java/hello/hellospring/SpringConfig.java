@@ -2,12 +2,23 @@ package hello.hellospring;
 
 import hello.hellospring.repository.MemberRepository;
 import hello.hellospring.repository.MemoryMemberRepository;
+import hello.hellospring.repository.JdbcMemberRepository;
 import hello.hellospring.service.MemberService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.sql.DataSource;
+
 @Configuration // Configuration 어노테이션 : 얘는 설정하는 데 쓰인단 소리
 public class SpringConfig {
+
+    private DataSource dataSource;
+
+    @Autowired
+    public SpringConfig(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     @Bean
     /* Bean 어노테이션 : 얘를 스프링 빈으로 등록
@@ -21,7 +32,12 @@ public class SpringConfig {
 
     @Bean
     public MemberRepository memberRepository() {
-        return new MemoryMemberRepository();
+        return new JdbcMemberRepository(dataSource);
+        // return new MemoryMemberRepository();
         // 왜 MemoryMemberRepository? -> MemberRepository 인터페이스를 구현한 구현체가 MemoryMemberRepository 니까!
     }
+
+    // 순수 JDBC 사용 시 설정하기
+    // 1. 우선, MemberRepository의 구현체인 JdbcMemberRepository로 Bean 설정
+
 }

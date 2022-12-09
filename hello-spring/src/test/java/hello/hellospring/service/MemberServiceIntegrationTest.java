@@ -1,37 +1,30 @@
 package hello.hellospring.service;
         // 클래스에서 직접 테스트 생성 시 알아서 test 아래에 똑같은 패키지 아래 생성됨 :)
+
 import hello.hellospring.domain.Member;
+import hello.hellospring.repository.MemberRepository;
 import hello.hellospring.repository.MemoryMemberRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class MemberServiceTest {
-    // 이 전체를 돌렸을 때 에러가 발생하지 않기 위해 메소드 실행 시마다 데이터 클리어되도록 하자. -> AfterEach
+@SpringBootTest
+@Transactional
+// Transactional 어노테이션을 테스트에 적용할 경우 :
+//    테스트 적용 시 transactional을 우선 실행 -> 테스트 실행 후 바로 rollback을 해준다.
+class MemberServiceIntegrationTest {
+    @Autowired
     MemberService memberService;
-    MemoryMemberRepository memberRepository;
-    // MemoryMemberRepository memberRepository = new MemoryMemberRepository();
-    // 이렇게 생성했을 때의 단점 -> 같은 인스턴스를 사용하게 해야하는데, 지금 같은 경우는 각기 다른 인스턴스를 사용하고 있음.
-    // 수정하는 방법 -> 1. 우선 memberService로 이동
-    // 3. 돌아와서 MemoryMemberRepository도 선언만 해준 뒤 beforeEach 생성
-
-
-    @BeforeEach
-    public void beforeEach() {
-        memberRepository = new MemoryMemberRepository();
-        memberService = new MemberService(memberRepository);
-        // MemoryMemberRepository 객체를 먼저 생성해준 뒤 걔를 MemberService에 넣어준다
-        // -> 그럼 같은 MemoryMemberRepository를 사용하게 됨.
-        // MemberService에서 직접 생성하지 않고 외부에서 생성된 것을 받아와서 쓰는 형태가 됨 = 의존성 주입(DI)
-    }
-
-    @AfterEach
-    public void afterEach() {
-        memberRepository.clearStore();
-    }
+    @Autowired
+    MemberRepository memberRepository;
+    // 테스트할땐 그냥 Autowired로 (따로 생성자 없이) 처리하는 게 더 간결함
+    // SpringConfig 에 설정해 둔 데서 올것임!
 
 
     @Test
@@ -74,17 +67,8 @@ class MemberServiceTest {
         // () -> memberService.join(member2)가 실행되었을 때 IllegalStateException 예외가 터져야 된다!
         assertThat(e.getMessage()).isEqualTo("이미 존재하는 회원입니다.");
 
-        // then
+        
     }
 
-    @Test
-    void findMembers() {
-    }
 
-    @Test
-    void findOne() {
-    }
 }
-
-// 이렇게 하는 것을 단위 테스트라고 함!
-// 단위별로 나누어서 필요한 기능만 테스트해보는 것 -> 통합 테스트보다 훨씬 시간이 절약되기 때문에 더 효율적임 :)

@@ -16,9 +16,9 @@
           <td th:text = "${member.id}"></td>
           <td th:text = "${member.name}"></td>
         </tr>
-      // th의 each 문법 (자바의 forEach과 동일) 을 이용해, members에 담긴 객체들이 하나씩 돌면서 꺼내져 나옴
-      // 이때 id와 name은 직접적으로 Member 클래스의 객체를 가져오는 것이 아니라,
-      // getter를 이용해서 가져오는 방식임! : getId(), getName()
+        <!-- th의 each 문법 (자바의 forEach과 동일) 을 이용해, members에 담긴 객체들이 하나씩 돌면서 꺼내져 나옴
+            이때 id와 name은 직접적으로 Member 클래스의 객체를 가져오는 것이 아니라,
+            getter를 이용해서 가져오는 방식임! : getId(), getName() -->
       </tbody>
     </table>
   </div>
