@@ -1,0 +1,82 @@
+/* JPA : JAVA Persistence API */
+- 기존의 반복 코드는 물론, SQL도 직접 만들어서 실행
+- SQL, 데이터 중심의 설계 -> 객체 중심의 설계 가능
+- 개발 생산성 증가
+
+1. 우선 build.gradle 에 implementation 'org.springframework.boot:spring-boot-starter-data-jpa' 해서
+해당 라이브러리를 추가해 주기. (JDBC 라이브러리는 이때 주석처리 해버리자! 필요 X)
+
+2. src/main/resources의 application.properties 에 설정을 추가해주자
+    spring.jpa.show-sql=true // SQL 보여주기
+    - JPA가 날리는 SQL을 볼 수 있음
+    spring.jpa.hibernate.ddl-auto=none // 자동 테이블 생성 기능
+    - JPA를 사용하면 객체를 보고 스스로 테이블을 직접 생성하는데,
+    우리는 이미 만들었고, 만들어진 것을 쓸 것이기 때문에 자동 테이블 생성 기능을 끈다.
+
+/*
+    JPA는 인터페이스고, 이것을 구현한 구현체 중 하나가 hibernate임. JPA는 곧 '자바 표준 인터페이스'를 말함.
+    JPA = ORM 기술임 (Object Relational database Mapping)
+    - 객체와 데이터베이스를 맵핑해준단 소리임.
+*/
+
+3. entity 맵핑해주기 -> 어노테이션 (@Entity) 이용!
+    - Member 클래스에 가서 @Entity 어노테이션 써주기 (javax.persistence.Entity)
+    -> JPA가 관리하는 Entity가 되는 것!
+
+4. PK 맵핑해주기 -> 어노테이션 (@Id, @GeneratedValue) 이용!
+    - pk인 Id에다가 두 어노테이션 적용해주기
+    - @GeneratedValue를 적용하는 이유?
+        우리는 Id를 우리가 직접 생성하는게 아니라, 시퀀스로 자동적으로 값이 입력되게 해놨음 (데이터가 알아서 generate 함)
+        이게 PK로 구분을 해주므로 (각 데이터의 identity를 만들어주니) @GeneratedValue(strategy = GenerationType.IDENTITY) 라고 작성
+
+    cf. 만약 여기 생성된 객체 중 DB의 컬럼명이 다르다면?
+    @Column(name = "DB의 컬럼명") 으로 입력해주면 됨.
+
+5. Repository에 JPAMemberRepository 생성
+    - MemberRepository implement 한 후에 alt + insert 눌러서 메소드 받아오기!
+    - 이후 private final EntityManager em 으로 객체 선언
+    - alt + insert로 생성자 만들기
+    // EntityManager에 대한 설명은 해당 repository에 있음
+
+6. 각 메소드에 적용해주기
+    1) save
+        em.persist(member) 후 member 객체 return 하면 끝
+        : persist가 insert query 해서 다 집어넣고, id까지 전부 처리해 줌
+    2) findById
+        Member member = em.find(Member.class, id)
+        : em.find(조회할 타입, 식별자); => 이때 식별자는 pk여야 함
+
+    But, PK가 아닌 값으로 조회할 경우 어떻게 하는가? -> JPQL이라는 객체지향쿼리언어 사용해야함.
+
+    3) findAll  /* 전부 다 조회하는 경우 */
+        List<Member> result = em.createQuery("select m from Member m", Member.class).getResultList()
+        해서 result 를 return 해주면 됨 -> ctrl + alt + n 누르면 단축됨.
+        // 보면 알겠지만 "테이블 대상"으로 쿼리를 날리는 것이 아니라, "객체 대상으로" 쿼리를 날림 (이때 Member는 객체임!)
+        // --> 그럼 SQL로 번역되어 실행됨
+
+    4) findByName  /* PK가 아닌 다른 값으로 조회하는 경우 */
+        List<Member> result = em.createQuery("select m from Member m where m.name = :name", Member.class)
+                                .setParameter("name", name)
+                                .getResultList();
+        // But, findByName은 Optional로 return하므로 형변환해주자
+        return result.stream().findAny();
+
+
+/* JPA는 항상 트랜잭션이 있어야 함 ! 설정해주자 */
+
+
+7. 트랜잭션 설정해주기 -> MemberService에 가서 @Transactional 어노테이션 사용
+- 회원가입에만 사용하기 때문에 회원가입 메서드에만 써도 OK
+
+/* JPA는 데이터의 변경이 트랜잭션 안에서 실행되어야 한다. */
+
+
+8. 이후, SpringConfig가서 빈 설정 변경
+    - dataSource 객체 선언, 생성자 모두 주석 처리
+    -> EntityManager 객체 선언, 생성자 만들어주기
+    - MemberRepository 생성자에 return 값 변경해주기
+    -> return new JPAMemberRepository(em);
+
+
+9. 통합 테스트 실행 (MemberServiceIntegrationTest)
+    - 트랜잭션때문에 테스트가 끝나면 롤백되므로, 회원 가입 같은 경우 제대로 확인하고 싶으면 @Commit 사용!

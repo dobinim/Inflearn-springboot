@@ -1,0 +1,15 @@
+/* 순수 JDBC 사용하기 */
+1. build.gradle 에 관련 라이브러리 추가 (jdbc, h2)
+// implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+// runtimeOnly 'com.h2database:h2'
+를 dependency 안에 추가해주고 옆의 코끼리 모양 눌러주기.
+- jdbc : Java가 DB랑 연결되는 데에 꼭 필요한 드라이버. 이를 통해 DB와 연동
+
+2. src/main/resources의 application.properties에 다음과 같이 입력
+// spring.datasource.url=jdbc:h2:tcp://localhost/~/test
+// spring.datasource.driver-class-name=org.h2.Driver
+// spring.datasource.username=sa
+
+
+/* h2 키고 하는데 시퀀스때문에 오류 날 경우 시퀀스 초기화해줘야 함. */
+-> ALTER SEQUENCE 시퀀스이름 RESTART WITH 시작하고자하는숫자;
