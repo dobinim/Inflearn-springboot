@@ -1,0 +1,18 @@
+/* 스프링 데이터 JPA */
+- JPA를 편하게 사용하도록 도와주는 기술
+
+1. 인터페이스 생성 : SpringDataJPAMemberRepository
+    - MemberRepository와 JpaRepository<Member, Long> 상속
+    - findByName(String id) 를 override 해줄 것
+    --> 이러면 끝. 구현체 따로 필요 없음.
+
+2. SpringConfig가서 설정 변경해주기
+    - 스프링데이터JPA를 이용하기 위한 인터페이스가 JpaRepository를 상속하고 있다면,
+        해당 구현체를 자신이 알아서 생성해서 Bean으로 등록한다.
+    -> EntityManager 객체 선언, 생성자 모두 주석처리
+    -> MemberRepository 객체 선언, 생성자 만들어주기
+    -> public MemberService memberService() 부분의 memberRepository() 에서 () 삭제 => 객체 (의존관계 세팅)
+    -> bean 어노테이션 등록한 memberRepository() 메서드 주석 처리
+
+3. JpaRepository 등을 보면 '공통적인 기능' 들이 모두 저장되어 있어서, 이부분은 따로 구현할 필요가 없음
+-> 그러나 비즈니스 간에 상이한 기능은 직접 구현해 줘야함 (우리가 위에서 findByName 따로 오버라이드했듯)
